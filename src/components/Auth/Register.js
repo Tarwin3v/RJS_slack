@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import md5 from 'md5';
 //SEMANTIC UI
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react';
 //FIREBASE
@@ -11,7 +12,9 @@ class Register extends Component {
 		email: '',
 		password: '',
 		passwordConfirmation: '',
-		errors: []
+		errors: [],
+		loading: false,
+		usersRef: firebase.database().ref('users')
 	};
 
 	isFormValid = () => {
@@ -49,22 +52,52 @@ class Register extends Component {
 		this.setState({ [event.target.name]: event.target.value });
 	};
 	handleSubmit = (event) => {
+		event.preventDefault();
 		if (this.isFormValid()) {
-			event.preventDefault();
+			this.setState({ errors: [], loading: true });
 			firebase
 				.auth()
 				.createUserWithEmailAndPassword(this.state.email, this.state.password)
 				.then((createdUser) => {
 					console.log(createdUser);
+					createdUser.user
+						.updateProfile({
+							displayName: this.state.username,
+							photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+						})
+						.then(() => {
+							this.saveUser(createdUser).then(() => {
+								console.log('User saved');
+							});
+							this.setState({ loading: false });
+						})
+						.catch((err) => {
+							console.log(err);
+							this.setState({ errors: this.state.errors.concat(err), loading: false });
+						});
 				})
-				.catch((err) => console.error(err));
+				.catch((err) => {
+					console.error(err);
+					this.setState({ errors: this.state.errors.concat(err), loading: false });
+				});
 		}
+	};
+
+	saveUser = (createdUser) => {
+		return this.state.usersRef.child(createdUser.user.uid).set({
+			name: createdUser.user.displayName,
+			avatar: createdUser.user.photoURL
+		});
+	};
+
+	handleInputError = (errors, inputName) => {
+		return errors.some((error) => error.message.toLowerCase().includes(inputName)) ? 'error' : '';
 	};
 
 	displayErrors = (errors) => errors.map((error, i) => <p key={i}>{error.message}</p>);
 
 	render() {
-		const { username, email, password, passwordConfirmation, errors } = this.state;
+		const { username, email, password, passwordConfirmation, errors, loading } = this.state;
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="app">
 				<Grid.Column style={{ maxWidth: 450 }}>
@@ -85,6 +118,7 @@ class Register extends Component {
 							/>
 							<Form.Input
 								type="email"
+								className={this.handleInputError(errors, 'email')}
 								fluid
 								name="email"
 								icon="mail"
@@ -95,6 +129,7 @@ class Register extends Component {
 							/>
 							<Form.Input
 								type="password"
+								className={this.handleInputError(errors, 'password')}
 								fluid
 								name="password"
 								icon="lock"
@@ -105,6 +140,7 @@ class Register extends Component {
 							/>
 							<Form.Input
 								type="password"
+								className={this.handleInputError(errors, 'password')}
 								fluid
 								name="passwordConfirmation"
 								icon="repeat"
@@ -113,7 +149,13 @@ class Register extends Component {
 								onChange={this.handleChange}
 								value={passwordConfirmation}
 							/>
-							<Button color="orange" fluid size="large">
+							<Button
+								className={loading ? 'loading' : ''}
+								disabled={loading}
+								color="orange"
+								fluid
+								size="large"
+							>
 								Submit
 							</Button>
 						</Segment>
