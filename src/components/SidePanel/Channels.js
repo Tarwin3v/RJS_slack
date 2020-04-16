@@ -1,5 +1,7 @@
 import React from 'react';
-
+//REDUX
+import { connect } from 'react-redux';
+import { setCurrentChannel } from '../../actions/index';
 //FIREBASE
 import firebase from '../../firebase';
 //SEMANTIC
@@ -58,13 +60,18 @@ class Channels extends React.Component {
 		channels.map((channel) => (
 			<Menu.Item
 				key={channel.id}
-				onClick={() => console.log(channel)}
+				onClick={() => this.changeChannel(channel)}
 				name={channel.name}
 				style={{ opacity: 0.7 }}
 			>
 				#{channel.name}
 			</Menu.Item>
 		));
+
+	changeChannel = (channel) => {
+		this.props.setCurrentChannel(channel);
+	};
+
 	openModal = () => this.setState({ modal: true });
 
 	closeModal = () => this.setState({ modal: false });
@@ -134,4 +141,4 @@ class Channels extends React.Component {
 	}
 }
 
-export default Channels;
+export default connect(null, { setCurrentChannel })(Channels);
