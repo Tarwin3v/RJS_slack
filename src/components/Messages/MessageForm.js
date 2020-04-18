@@ -6,6 +6,7 @@ import firebase from '../../firebase';
 import { Segment, Button, Input } from 'semantic-ui-react';
 //COMP
 import FileModal from './FileModal';
+import ProgressBar from './ProgressBar';
 
 export class MessageForm extends Component {
 	state = {
@@ -139,7 +140,7 @@ export class MessageForm extends Component {
 	};
 
 	render() {
-		const { errors, message, loading, modal } = this.state;
+		const { errors, message, loading, modal, uploadState, percentUploaded } = this.state;
 		return (
 			<Segment className="message__form">
 				<Input
@@ -171,6 +172,7 @@ export class MessageForm extends Component {
 						disabled={loading}
 						onClick={this.openModal}
 					/>
+					<ProgressBar uploadState={uploadState} percentUploaded={percentUploaded} />
 					<FileModal modal={modal} closeModal={this.closeModal} uploadFile={this.uploadFile} />
 				</Button.Group>
 			</Segment>
