@@ -45,6 +45,7 @@ export class MessageForm extends Component {
 		}
 		return message;
 	};
+
 	sendMessage = () => {
 		const { messagesRef } = this.props;
 		const { message, channel } = this.state;
@@ -65,13 +66,6 @@ export class MessageForm extends Component {
 		} else {
 			this.setState({ errors: this.state.errors.concat({ message: 'Add a message' }) });
 		}
-	};
-
-	openModal = () => {
-		this.setState({ modal: true });
-	};
-	closeModal = () => {
-		this.setState({ modal: false });
 	};
 
 	sendFileMessage = (fileUrl, ref, pathToUpload) => {
@@ -135,6 +129,13 @@ export class MessageForm extends Component {
 				);
 			}
 		);
+	};
+
+	openModal = () => {
+		this.setState({ modal: true });
+	};
+	closeModal = () => {
+		this.setState({ modal: false });
 	};
 
 	render() {

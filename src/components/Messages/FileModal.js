@@ -27,16 +27,12 @@ class FileModal extends Component {
 				};
 				uploadFile(file, metadata);
 				closeModal();
-				this.clearFile();
+				this.setState({ file: null });
 			}
 		}
 	};
 
 	isAuthorized = (filename) => this.state.authorized.includes(mime.lookup(filename));
-
-	clearFile = () => {
-		this.setState({ file: null });
-	};
 
 	render() {
 		const { modal, closeModal } = this.props;
