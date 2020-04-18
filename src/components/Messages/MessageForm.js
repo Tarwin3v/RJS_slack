@@ -143,6 +143,7 @@ export class MessageForm extends Component {
 		const { errors, message, loading, modal, uploadState, percentUploaded } = this.state;
 		return (
 			<Segment className="message__form">
+				<ProgressBar uploadState={uploadState} percentUploaded={percentUploaded} />
 				<Input
 					fluid
 					name="message"
@@ -169,10 +170,10 @@ export class MessageForm extends Component {
 						content="Upload Media"
 						labelPosition="right"
 						icon="cloud upload"
-						disabled={loading}
+						disabled={uploadState === 'uploading'}
 						onClick={this.openModal}
 					/>
-					<ProgressBar uploadState={uploadState} percentUploaded={percentUploaded} />
+
 					<FileModal modal={modal} closeModal={this.closeModal} uploadFile={this.uploadFile} />
 				</Button.Group>
 			</Segment>
