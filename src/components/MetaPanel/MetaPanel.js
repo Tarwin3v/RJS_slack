@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 //SEMANTIC
-import { Segment, Accordion, Header, Icon } from 'semantic-ui-react';
+import { Segment, Accordion, Header, Icon, Image } from 'semantic-ui-react';
 
 class MetaPanel extends Component {
 	state = {
+		currentChannel: this.props.currentChannel,
+		isPrivateChannel: this.props.isPrivateChannel,
 		activeIndex: 0
 	};
 
@@ -14,19 +16,23 @@ class MetaPanel extends Component {
 		this.setState({ activeIndex: newIndex });
 	};
 	render() {
-		const { activeIndex } = this.state;
+		const { activeIndex, isPrivateChannel, currentChannel } = this.state;
+
+		if (isPrivateChannel) return null;
 		return (
-			<Segment>
+			<Segment loading={!currentChannel}>
 				<Header as="h3" attached="top">
-					About # Channel
+					About # {currentChannel && currentChannel.name}
 				</Header>
 				<Accordion styled attached="true">
 					<Accordion.Title active={activeIndex === 0} index={0} onClick={this.setActiveIndex}>
 						<Icon name="dropdown" />
 						<Icon name="info" />
-						Channel Details
+						Details
 					</Accordion.Title>
-					<Accordion.Content active={activeIndex === 0}>Details</Accordion.Content>
+					<Accordion.Content active={activeIndex === 0}>
+						{currentChannel && currentChannel.details}
+					</Accordion.Content>
 					<Accordion.Title active={activeIndex === 1} index={1} onClick={this.setActiveIndex}>
 						<Icon name="dropdown" />
 						<Icon name="user cirle" />
@@ -38,7 +44,12 @@ class MetaPanel extends Component {
 						<Icon name="pencil" />
 						Created By
 					</Accordion.Title>
-					<Accordion.Content active={activeIndex === 2}>Creator</Accordion.Content>
+					<Accordion.Content active={activeIndex === 2}>
+						<Header as="h3">
+							<Image circular src={currentChannel && currentChannel.createdBy.avatar} />
+							{currentChannel && currentChannel.createdBy.name}
+						</Header>
+					</Accordion.Content>
 				</Accordion>
 			</Segment>
 		);
