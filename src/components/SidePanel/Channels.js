@@ -124,7 +124,6 @@ class Channels extends React.Component {
 						</span>{' '}
 						({channels.length}) <Icon name="add" onClick={this.openModal} />
 					</Menu.Item>
-					{/* Channels */}
 					{this.displayChannels(channels)}
 				</Menu.Menu>
 
