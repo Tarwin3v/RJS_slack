@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //SEMANTIC
-import { Segment, Accordion, Header, Icon, Image } from 'semantic-ui-react';
+import { Segment, Accordion, Header, Icon, Image, List } from 'semantic-ui-react';
 
 class MetaPanel extends Component {
 	state = {
@@ -15,8 +15,26 @@ class MetaPanel extends Component {
 		const newIndex = activeIndex === index ? -1 : index;
 		this.setState({ activeIndex: newIndex });
 	};
+
+	formatCount = (num) => (num > 1 || num === 0 ? `${num} posts` : `${num} post`);
+
+	displayTopPosters = (posts) =>
+		Object.entries(posts)
+			.sort((a, b) => b[1] - a[1])
+			.map(([ key, val ], i) => (
+				<List.Item key={i}>
+					<Image avatar src={val.avatar} />
+					<List.Content>
+						<List.Header as="a">{key}</List.Header>
+						<List.Description>{this.formatCount(val.count)}</List.Description>
+					</List.Content>
+				</List.Item>
+			))
+			.slice(0, 5);
+
 	render() {
 		const { activeIndex, isPrivateChannel, currentChannel } = this.state;
+		const { userPosts } = this.props;
 
 		if (isPrivateChannel) return null;
 		return (
@@ -35,10 +53,12 @@ class MetaPanel extends Component {
 					</Accordion.Content>
 					<Accordion.Title active={activeIndex === 1} index={1} onClick={this.setActiveIndex}>
 						<Icon name="dropdown" />
-						<Icon name="user cirle" />
+						<Icon name="user circle" />
 						Top Posters
 					</Accordion.Title>
-					<Accordion.Content active={activeIndex === 1}>Posters</Accordion.Content>
+					<Accordion.Content active={activeIndex === 1}>
+						<List>{userPosts && this.displayTopPosters(userPosts)}</List>
+					</Accordion.Content>
 					<Accordion.Title active={activeIndex === 2} index={2} onClick={this.setActiveIndex}>
 						<Icon name="dropdown" />
 						<Icon name="pencil" />

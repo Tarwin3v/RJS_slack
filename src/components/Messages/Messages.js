@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
+
+//REDUX
+import { connect } from 'react-redux';
+import { setUserPosts } from '../../actions';
 //FIREBASE
 import firebase from '../../firebase';
-//REDUX
 //SEMANTIC
 import { Segment, Comment } from 'semantic-ui-react';
 //COMP
@@ -9,17 +12,17 @@ import MessagesHeader from './MessagesHeader';
 import MessageForm from './MessageForm';
 import Message from './Message';
 
-class Messages extends Component {
+class Messages extends React.Component {
 	state = {
-		isPrivateChannel: this.props.isPrivateChannel,
-		isChannelStarred: false,
+		privateChannel: this.props.isPrivateChannel,
 		privateMessagesRef: firebase.database().ref('privateMessages'),
 		messagesRef: firebase.database().ref('messages'),
-		usersRef: firebase.database().ref('users'),
 		messages: [],
 		messagesLoading: true,
-		currentChannel: this.props.currentChannel,
+		channel: this.props.currentChannel,
+		isChannelStarred: false,
 		user: this.props.currentUser,
+		usersRef: firebase.database().ref('users'),
 		numUniqueUsers: '',
 		searchTerm: '',
 		searchLoading: false,
@@ -27,10 +30,11 @@ class Messages extends Component {
 	};
 
 	componentDidMount() {
-		const { currentChannel, user } = this.state;
-		if (currentChannel && user) {
-			this.addListeners(currentChannel.id);
-			this.addUsersStarsListener(currentChannel.id, user.uid);
+		const { channel, user } = this.state;
+
+		if (channel && user) {
+			this.addListeners(channel.id);
+			this.addUserStarsListener(channel.id, user.uid);
 		}
 	}
 
@@ -43,17 +47,16 @@ class Messages extends Component {
 		const ref = this.getMessagesRef();
 		ref.child(channelId).on('child_added', (snap) => {
 			loadedMessages.push(snap.val());
-
 			this.setState({
 				messages: loadedMessages,
 				messagesLoading: false
 			});
-			console.log(loadedMessages);
+			this.countUniqueUsers(loadedMessages);
+			this.countUserPosts(loadedMessages);
 		});
-		this.countUniqueUsers(loadedMessages);
 	};
 
-	addUsersStarsListener = (channelId, userId) => {
+	addUserStarsListener = (channelId, userId) => {
 		this.state.usersRef.child(userId).child('starred').once('value').then((data) => {
 			if (data.val() !== null) {
 				const channelIds = Object.keys(data.val());
@@ -64,28 +67,38 @@ class Messages extends Component {
 	};
 
 	getMessagesRef = () => {
-		const { messagesRef, privateMessagesRef, isPrivateChannel } = this.state;
-		return isPrivateChannel ? privateMessagesRef : messagesRef;
+		const { messagesRef, privateMessagesRef, privateChannel } = this.state;
+		return privateChannel ? privateMessagesRef : messagesRef;
 	};
 
-	countUniqueUsers = (messages) => {
-		const uniqueUsers = messages.reduce((acc, message) => {
-			if (!acc.includes(message.user.name)) {
-				acc.push(message.user.name);
-			}
-			return acc;
-		}, []);
-		const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
-		const numUniqueUsers = `${uniqueUsers.length} user${plural ? 's' : ''}`;
-		this.setState({ numUniqueUsers });
+	handleStar = () => {
+		this.setState(
+			(prevState) => ({
+				isChannelStarred: !prevState.isChannelStarred
+			}),
+			() => this.starChannel()
+		);
 	};
 
-	displayMessages = (messages) =>
-		messages.length > 0 &&
-		messages.map((message) => <Message key={message.timestamp} message={message} user={this.state.user} />);
-
-	displayChannelName = (channel) => {
-		return channel ? `${this.state.isPrivateChannel ? '@' : '#'}${channel.name}` : '';
+	starChannel = () => {
+		if (this.state.isChannelStarred) {
+			this.state.usersRef.child(`${this.state.user.uid}/starred`).update({
+				[this.state.channel.id]: {
+					name: this.state.channel.name,
+					details: this.state.channel.details,
+					createdBy: {
+						name: this.state.channel.createdBy.name,
+						avatar: this.state.channel.createdBy.avatar
+					}
+				}
+			});
+		} else {
+			this.state.usersRef.child(`${this.state.user.uid}/starred`).child(this.state.channel.id).remove((err) => {
+				if (err !== null) {
+					console.error(err);
+				}
+			});
+		}
 	};
 
 	handleSearchChange = (event) => {
@@ -108,73 +121,81 @@ class Messages extends Component {
 			return acc;
 		}, []);
 		this.setState({ searchResults });
+		setTimeout(() => this.setState({ searchLoading: false }), 1000);
 	};
 
-	handleStar = () => {
-		this.setState(
-			(prevState) => ({
-				isChannelStarred: !prevState.isChannelStarred
-			}),
-			() => this.starChannel()
-		);
+	countUniqueUsers = (messages) => {
+		const uniqueUsers = messages.reduce((acc, message) => {
+			if (!acc.includes(message.user.name)) {
+				acc.push(message.user.name);
+			}
+			return acc;
+		}, []);
+		const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+		const numUniqueUsers = `${uniqueUsers.length} user${plural ? 's' : ''}`;
+		this.setState({ numUniqueUsers });
 	};
 
-	starChannel = () => {
-		if (this.state.isChannelStarred) {
-			this.state.usersRef.child(`${this.state.user.uid}/starred`).update({
-				[this.state.currentChannel.id]: {
-					name: this.state.currentChannel.name,
-					details: this.state.currentChannel.details,
-					createdBy: {
-						name: this.state.currentChannel.createdBy.name,
-						avatar: this.state.currentChannel.createdBy.avatar
-					}
-				}
-			});
-		} else {
-			this.state.usersRef
-				.child(`${this.state.user.uid}/starred`)
-				.child(this.state.currentChannel.id)
-				.remove((err) => {
-					if (err !== null) {
-						console.log(err);
-					}
-				});
-		}
+	countUserPosts = (messages) => {
+		let userPosts = messages.reduce((acc, message) => {
+			if (message.user.name in acc) {
+				acc[message.user.name].count += 1;
+			} else {
+				acc[message.user.name] = {
+					avatar: message.user.avatar,
+					count: 1
+				};
+			}
+			return acc;
+		}, {});
+		this.props.setUserPosts(userPosts);
+	};
+
+	displayMessages = (messages) =>
+		messages.length > 0 &&
+		messages.map((message) => <Message key={message.timestamp} message={message} user={this.state.user} />);
+
+	displayChannelName = (channel) => {
+		return channel ? `${this.state.privateChannel ? '@' : '#'}${channel.name}` : '';
 	};
 
 	render() {
 		const {
 			messagesRef,
 			messages,
-			currentChannel,
+			channel,
 			user,
 			numUniqueUsers,
 			searchTerm,
 			searchResults,
-			isPrivateChannel,
+			searchLoading,
+			privateChannel,
 			isChannelStarred
 		} = this.state;
+
 		return (
 			<React.Fragment>
 				<MessagesHeader
-					channelName={this.displayChannelName(currentChannel)}
+					channelName={this.displayChannelName(channel)}
 					numUniqueUsers={numUniqueUsers}
 					handleSearchChange={this.handleSearchChange}
-					isPrivateChannel={isPrivateChannel}
+					searchLoading={searchLoading}
+					isPrivateChannel={privateChannel}
 					handleStar={this.handleStar}
 					isChannelStarred={isChannelStarred}
 				/>
-				<Segment className="messages">
-					<Comment.Group>
+
+				<Segment>
+					<Comment.Group className="messages">
 						{searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
 					</Comment.Group>
 				</Segment>
+
 				<MessageForm
 					messagesRef={messagesRef}
-					currentChannel={currentChannel}
+					currentChannel={channel}
 					currentUser={user}
-					isPrivateChannel={isPrivateChannel}
+					isPrivateChannel={privateChannel}
 					getMessagesRef={this.getMessagesRef}
 				/>
 			</React.Fragment>
@@ -182,4 +203,4 @@ class Messages extends Component {
 	}
 }
 
-export default Messages;
+export default connect(null, { setUserPosts })(Messages);
