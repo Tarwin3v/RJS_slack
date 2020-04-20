@@ -11,8 +11,8 @@ import { Menu, Icon } from 'semantic-ui-react';
 class DirectMessages extends Component {
 	state = {
 		activeChannel: '',
-		users: [],
 		user: this.props.currentUser,
+		users: [],
 		usersRef: firebase.database().ref('users'),
 		connectedRef: firebase.database().ref('.info/connected'),
 		presenceRef: firebase.database().ref('presence')
@@ -20,11 +20,15 @@ class DirectMessages extends Component {
 
 	componentDidMount() {
 		if (this.state.user) {
-			this.addListener(this.state.user.uid);
+			this.addListeners(this.state.user.uid);
 		}
 	}
 
-	addListener = (currentUserUid) => {
+	componentWillUnmount() {
+		this.removeListeners();
+	}
+
+	addListeners = (currentUserUid) => {
 		let loadedUsers = [];
 		this.state.usersRef.on('child_added', (snap) => {
 			if (currentUserUid !== snap.key) {
@@ -42,7 +46,7 @@ class DirectMessages extends Component {
 				ref.set(true);
 				ref.onDisconnect().remove((err) => {
 					if (err !== null) {
-						console.log(err);
+						console.error(err);
 					}
 				});
 			}
@@ -59,6 +63,12 @@ class DirectMessages extends Component {
 				this.addStatusToUser(snap.key, false);
 			}
 		});
+	};
+
+	removeListeners = () => {
+		this.state.usersRef.off();
+		this.state.connectedRef.off();
+		this.state.presenceRef.off();
 	};
 
 	addStatusToUser = (userId, connected = true) => {
@@ -84,17 +94,18 @@ class DirectMessages extends Component {
 		this.setActiveChannel(user.uid);
 	};
 
-	setActiveChannel = (userId) => {
-		this.setState({ activeChannel: userId });
-	};
-
 	getChannelId = (userId) => {
 		const currentUserId = this.state.user.uid;
 		return userId < currentUserId ? `${userId}/${currentUserId}` : `${currentUserId}/${userId}`;
 	};
 
+	setActiveChannel = (userId) => {
+		this.setState({ activeChannel: userId });
+	};
+
 	render() {
 		const { users, activeChannel } = this.state;
+
 		return (
 			<Menu.Menu className="menu">
 				<Menu.Item>
@@ -106,9 +117,9 @@ class DirectMessages extends Component {
 				{users.map((user) => (
 					<Menu.Item
 						key={user.uid}
+						active={user.uid === activeChannel}
 						onClick={() => this.changeChannel(user)}
 						style={{ opacity: 0.7, fontStyle: 'italic' }}
-						active={user.uid === activeChannel}
 					>
 						<Icon name="circle" color={this.isUserOnline(user) ? 'green' : 'red'} />
 						@ {user.name}

@@ -185,8 +185,8 @@ class Messages extends React.Component {
 					isChannelStarred={isChannelStarred}
 				/>
 
-				<Segment>
-					<Comment.Group className="messages">
+				<Segment className="messages">
+					<Comment.Group>
 						{searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
 					</Comment.Group>
 				</Segment>
