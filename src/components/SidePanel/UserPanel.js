@@ -1,15 +1,23 @@
 import React, { Component } from 'react';
+import AvatarEditor from 'react-avatar-editor';
 
 //FIREBASE
 import firebase from '../../firebase';
 
 //SEMANTIC
-import { Grid, Header, Icon, Dropdown, Image } from 'semantic-ui-react';
+import { Grid, Header, Icon, Dropdown, Image, Modal, Input, Button } from 'semantic-ui-react';
 
 class UserPanel extends Component {
 	state = {
-		user: this.props.currentUser
+		user: this.props.currentUser,
+		modal: false,
+		previewImage: '',
+		croppedImage: '',
+		blob: ''
 	};
+
+	openModal = () => this.setState({ modal: true });
+	closeModal = () => this.setState({ modal: false });
 
 	dropdownOptions = () => [
 		{
@@ -23,7 +31,7 @@ class UserPanel extends Component {
 		},
 		{
 			key: 'avatar',
-			text: <span>Change Avatar</span>
+			text: <span onClick={this.openModal}>Change Avatar</span>
 		},
 		{
 			key: 'signout',
@@ -35,8 +43,32 @@ class UserPanel extends Component {
 		firebase.auth().signOut().then(() => console.log('Signed out')).catch((err) => console.log(err));
 	};
 
+	handleChange = (event) => {
+		const file = event.target.files[0];
+		const reader = new FileReader();
+
+		if (file) {
+			reader.readAsDataURL(file);
+			reader.addEventListener('load', () => {
+				this.setState({ previewImage: reader.result });
+			});
+		}
+	};
+
+	handleCropImage = () => {
+		if (this.AvatarEditor) {
+			this.AvatarEditor.getImageScaledToCanvas().toBlob((blob) => {
+				let imageUrl = URL.createObjectURL(blob);
+				this.setState({
+					croppedImage: imageUrl,
+					blob
+				});
+			});
+		}
+	};
+
 	render() {
-		const { user } = this.state;
+		const { user, modal, previewImage, croppedImage } = this.state;
 		const { primaryColor } = this.props;
 
 		return (
@@ -61,6 +93,57 @@ class UserPanel extends Component {
 							/>
 						</Header>
 					</Grid.Row>
+					<Modal basic open={modal} onClose={this.closeModal}>
+						<Modal.Header>Change Avatar</Modal.Header>
+						<Modal.Content>
+							<Input
+								fluid
+								type="file"
+								label="New avatar"
+								name="previewImage"
+								onChange={this.handleChange}
+							/>
+							<Grid centered stackable columns={2}>
+								<Grid.Row centered>
+									<Grid.Column className="ui center aligned grid">
+										{previewImage && (
+											<AvatarEditor
+												ref={(node) => (this.AvatarEditor = node)}
+												image={previewImage}
+												width={250}
+												height={250}
+												border={50}
+												scale={1.2}
+											/>
+										)}
+									</Grid.Column>
+									<Grid.Column className="ui center aligned grid">
+										{croppedImage && (
+											<Image
+												style={{ margin: '3.5em auto' }}
+												width={250}
+												height={250}
+												src={croppedImage}
+											/>
+										)}
+									</Grid.Column>
+								</Grid.Row>
+							</Grid>
+						</Modal.Content>
+						<Modal.Actions>
+							{croppedImage && (
+								<Button inverted color="green">
+									<Icon name="save" />Change Avatar
+								</Button>
+							)}
+							<Button inverted color="blue" onClick={this.handleCropImage}>
+								<Icon name="image" />Preview
+							</Button>
+							<Button inverted color="red" onClick={this.closeModal}>
+								<Icon name="remove" />Cancel
+							</Button>
+						</Modal.Actions>
+					</Modal>
 				</Grid.Column>
 			</Grid>
 		);
