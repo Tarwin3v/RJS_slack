@@ -81,7 +81,15 @@ class ColorPanel extends React.Component {
 		const { modal, primary, secondary, userColors } = this.state;
 
 		return (
-			<Sidebar as={Menu} icon="labeled" inverted vertical visible width="very thin">
+			<Sidebar
+				as={Menu}
+				icon="labeled"
+				inverted
+				vertical
+				visible
+				width="very thin"
+				style={{ color: '#eee !important' }}
+			>
 				<Divider />
 				<Button icon="add" size="small" color="blue" onClick={this.openModal} />
 				{this.displayUserColors(userColors)}
