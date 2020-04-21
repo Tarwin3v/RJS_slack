@@ -4,6 +4,8 @@ import uuidv4 from 'uuid/v4';
 import firebase from '../../firebase';
 //SEMANTIC
 import { Segment, Button, Input } from 'semantic-ui-react';
+import { Picker, emojiIndex } from 'emoji-mart';
+import 'emoji-mart/css/emoji-mart.css';
 //COMP
 import FileModal from './FileModal';
 import ProgressBar from './ProgressBar';
@@ -20,7 +22,8 @@ export class MessageForm extends Component {
 		user: this.props.currentUser,
 		loading: false,
 		modal: false,
-		errors: []
+		errors: [],
+		emojiPicker: false
 	};
 
 	handleChange = (event) => {
@@ -37,6 +40,32 @@ export class MessageForm extends Component {
 		} else {
 			typingRef.child(channel.id).child(user.uid).remove();
 		}
+	};
+
+	handleTogglePicker = () => {
+		this.setState({ emojiPicker: !this.state.emojiPicker });
+	};
+
+	handleAddEmoji = (emoji) => {
+		const oldMessage = this.state.message;
+		const newMessage = this.colonToUnicode(`${oldMessage} ${emoji.colons}`);
+		this.setState({ message: newMessage, emojiPicker: false });
+		setTimeout(() => this.messageInputRef.focus(), 0);
+	};
+
+	colonToUnicode = (message) => {
+		return message.replace(/:[A-Za-z0-9_+-]+:/g, (x) => {
+			x = x.replace(/:/g, '');
+			let emoji = emojiIndex.emojis[x];
+			if (typeof emoji !== 'undefined') {
+				let unicode = emoji.native;
+				if (typeof unicode !== 'undefined') {
+					return unicode;
+				}
+			}
+			x = ':' + x + ':';
+			return x;
+		});
 	};
 
 	createMessage = (fileUrl = null) => {
@@ -159,44 +188,69 @@ export class MessageForm extends Component {
 	};
 
 	render() {
-		const { errors, message, loading, modal, uploadState, percentUploaded } = this.state;
+		const { errors, message, loading, modal, uploadState, percentUploaded, emojiPicker } = this.state;
 		return (
-			<Segment className="message__form">
-				<ProgressBar uploadState={uploadState} percentUploaded={percentUploaded} />
-				<Input
-					fluid
-					name="message"
-					style={{ marginBottom: '0.7em' }}
-					label={<Button icon={'add'} />}
-					labelPosition="left"
-					placeholder="Write your message"
-					value={message}
-					onChange={this.handleChange}
-					onKeyDown={this.handleKeyDown}
-					className={errors.some((error) => error.message.includes('message')) ? 'error' : ''}
-				/>
-				<Button.Group className="button__group">
-					<Button
-						color="orange"
-						content="Add Reply"
-						labelPosition="left"
-						icon="edit"
-						disabled={loading}
-						onClick={this.sendMessage}
-						style={{ marginRight: '1em' }}
-					/>
-					<Button
-						color="teal"
-						content="Upload Media"
-						labelPosition="right"
-						icon="cloud upload"
-						disabled={uploadState === 'uploading'}
-						onClick={this.openModal}
-					/>
+			<React.Fragment>
+				<Segment className="message__form">
+					<ProgressBar uploadState={uploadState} percentUploaded={percentUploaded} />
+					{emojiPicker && (
+						<Picker
+							set="apple"
+							onSelect={this.handleAddEmoji}
+							title="Emoji"
+							emoji="point_up"
+							style={{
+								position: 'absolute',
+								top: '-45vh',
+								zIndex: 300
+							}}
+						/>
+					)}
 
-					<FileModal modal={modal} closeModal={this.closeModal} uploadFile={this.uploadFile} />
-				</Button.Group>
-			</Segment>
+					<Input
+						ref={(node) => (this.messageInputRef = node)}
+						fluid
+						name="message"
+						style={{ marginBottom: '0.7em' }}
+						label={
+							<Button
+								icon={emojiPicker ? 'close' : 'add'}
+								content={emojiPicker ? 'Close' : null}
+								onClick={this.handleTogglePicker}
+							/>
+						}
+						labelPosition="left"
+						placeholder="Write your message"
+						multiline
+						rows={3}
+						value={message}
+						onChange={this.handleChange}
+						onKeyDown={this.handleKeyDown}
+						className={errors.some((error) => error.message.includes('message')) ? 'error' : ''}
+					/>
+					<Button.Group className="button__group">
+						<Button
+							color="orange"
+							content="Add Reply"
+							labelPosition="left"
+							icon="edit"
+							disabled={loading}
+							onClick={this.sendMessage}
+							style={{ marginRight: '1em' }}
+						/>
+						<Button
+							color="teal"
+							content="Upload Media"
+							labelPosition="right"
+							icon="cloud upload"
+							disabled={uploadState === 'uploading'}
+							onClick={this.openModal}
+						/>
+
+						<FileModal modal={modal} closeModal={this.closeModal} uploadFile={this.uploadFile} />
+					</Button.Group>
+				</Segment>
+			</React.Fragment>
 		);
 	}
 }
