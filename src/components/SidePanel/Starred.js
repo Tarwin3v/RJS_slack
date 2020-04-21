@@ -21,6 +21,9 @@ class Starred extends Component {
 			this.addListeners(this.state.user.uid);
 		}
 	}
+	componentWillUnmount() {
+		this.state.usersRef.child(`${this.state.user.uid}/starred`).off();
+	}
 
 	addListeners = (userId) => {
 		this.state.usersRef.child(userId).child('starred').on('child_added', (snap) => {

@@ -28,7 +28,10 @@ class Channels extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.removeListeners();
+		this.state.channelsRef.off();
+		this.state.channels.forEach((channel) => {
+			this.state.messagesRef.child(channel.id).off();
+		});
 	}
 
 	addListeners = () => {
@@ -82,10 +85,6 @@ class Channels extends React.Component {
 			}
 		});
 		if (count > 0) return count;
-	};
-
-	removeListeners = () => {
-		this.state.channelsRef.off();
 	};
 
 	setFirstChannel = () => {
