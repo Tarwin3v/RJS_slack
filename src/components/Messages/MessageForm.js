@@ -33,7 +33,10 @@ export class MessageForm extends Component {
 		});
 	};
 
-	handleKeyDown = () => {
+	handleKeyDown = (event) => {
+		if (event.ctrlKey && event.keyCode === 13) {
+			this.sendMessage();
+		}
 		const { message, typingRef, channel, user } = this.state;
 		if (message) {
 			typingRef.child(channel.id).child(user.uid).set(user.displayName);
@@ -221,8 +224,6 @@ export class MessageForm extends Component {
 						}
 						labelPosition="left"
 						placeholder="Write your message"
-						multiline
-						rows={3}
 						value={message}
 						onChange={this.handleChange}
 						onKeyDown={this.handleKeyDown}
