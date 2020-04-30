@@ -105,6 +105,7 @@ class Messages extends React.Component {
 				this.setState({ typingUsers });
 			}
 		});
+		
 
 		this.addToListeners(channelId, this.state.typingRef, 'child_added');
 
