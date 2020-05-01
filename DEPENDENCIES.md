@@ -2,7 +2,7 @@
 
 # emoji-mart :: emoji picker component for React
 
-- https://www.npmjs.com/package/apollo-cache-inmemory
+- https://www.npmjs.com/package/emoji-mart
 
 # firebase
 

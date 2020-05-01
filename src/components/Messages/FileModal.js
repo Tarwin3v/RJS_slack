@@ -3,7 +3,11 @@ import mime from "mime-types";
 //SEMANTIC
 import { Modal, Input, Button, Icon } from "semantic-ui-react";
 
-//@d  modal && closeModal props from our MessageForm parent comp
+//@d  Props from MessageForm parent comp
+//@d modal={modal}
+//@d closeModal={this.closeModal}
+//@d uploadFile={this.uploadFile}
+
 class FileModal extends Component {
   state = {
     file: null,
