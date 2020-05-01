@@ -3,6 +3,7 @@ import mime from "mime-types";
 //SEMANTIC
 import { Modal, Input, Button, Icon } from "semantic-ui-react";
 
+//@d  modal && closeModal props from our MessageForm parent comp
 class FileModal extends Component {
   state = {
     file: null,
@@ -43,6 +44,7 @@ class FileModal extends Component {
     this.state.authorized.includes(mime.lookup(filename));
 
   render() {
+    //@q we deconstruct modal && closeModal from our props object
     const { modal, closeModal } = this.props;
     return (
       <Modal basic open={modal} onClose={closeModal}>
