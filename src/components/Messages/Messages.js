@@ -158,9 +158,11 @@ class Messages extends React.Component {
       //@d our presence collection structure ::
       //@d presence {
       //@d
-      //@d		userId(snap.key): true(snap.val())
+      //@d		{userId(snap.key): true(snap.val())},
+      //@d    {userId(snap.key): true(snap.val())}
       //@d    }
-      //@d }
+      //@d
+      //@q if snap.val()
       if (snap.val() === true) {
         this.state.typingRef
           .child(channelId)
