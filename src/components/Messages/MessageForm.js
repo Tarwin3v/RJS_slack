@@ -150,7 +150,7 @@ export class MessageForm extends Component {
   };
 
   sendFileMessage = (fileUrl, ref, pathToUpload) => {
-    //@d this is the final step of our message upload to db
+    //@d this is the final step to persist our message to db
     //@d we select first our pathToUpload who correspond to our current channel id
     //@d && we use push() method because we will persist a list on db && each message will have an specific id
     //@d && finally we set our data in db with our createMessage function with our fileUrl as argument
@@ -296,31 +296,21 @@ export class MessageForm extends Component {
                 : ""
             }
           />
-          <Button.Group className="button__group">
-            <Button
-              color="orange"
-              content="Add Reply"
-              labelPosition="left"
-              icon="edit"
-              disabled={loading}
-              onClick={this.sendMessage}
-              style={{ marginRight: "1em" }}
-            />
-            <Button
-              color="teal"
-              content="Upload Media"
-              labelPosition="right"
-              icon="cloud upload"
-              disabled={uploadState === "uploading"}
-              onClick={this.openModal}
-            />
 
-            <FileModal
-              modal={modal}
-              closeModal={this.closeModal}
-              uploadFile={this.uploadFile}
-            />
-          </Button.Group>
+          <Button
+            color="yellow"
+            content="Upload Media"
+            labelPosition="right"
+            icon="cloud upload"
+            disabled={uploadState === "uploading"}
+            onClick={this.openModal}
+          />
+
+          <FileModal
+            modal={modal}
+            closeModal={this.closeModal}
+            uploadFile={this.uploadFile}
+          />
         </Segment>
       </React.Fragment>
     );
