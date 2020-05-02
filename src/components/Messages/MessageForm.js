@@ -259,6 +259,7 @@ export class MessageForm extends Component {
             uploadState={uploadState}
             percentUploaded={percentUploaded}
           />
+          {/* if emojiPicker state === true then display the Picker comp */}
           {emojiPicker && (
             <Picker
               set="apple"
@@ -272,7 +273,10 @@ export class MessageForm extends Component {
               }}
             />
           )}
-
+          {/* we persist our input node in a property of this instance 
+			   we add a button as label that allow us to display or close our emoji Picker comp 
+			   we assignate dynamically our classeName with the errors state
+			*/}
           <Input
             ref={(node) => (this.messageInputRef = node)}
             fluid
