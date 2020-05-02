@@ -14,10 +14,10 @@ import Message from "./Message";
 import Typing from "./Typing";
 import Skeleton from "./Skeleton";
 
-//@d 					   PROPS
-//@d currentChannel={currentChannel}
-//@d currentUser={currentUser}							>>>>>>      App parent comp
-//@d isPrivateChannel={isPrivateChannel}
+//@d 					                      PROPS
+//@d currentChannel :: obj
+//@d currentUser :: obj							>>>>>     App parent comp
+//@d isPrivateChannel :: bool
 
 class Messages extends React.Component {
   state = {
