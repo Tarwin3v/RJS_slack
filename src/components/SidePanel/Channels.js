@@ -18,7 +18,7 @@ import {
 //@d                                                PROPS
 //@d	user :: obj
 //@d	setPrivateChannel :: fn                     >>>>>    App
-//@d	setActiveChannel  :: fn
+
 class Channels extends React.Component {
   state = {
     user: this.props.currentUser,
