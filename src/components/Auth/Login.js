@@ -29,7 +29,7 @@ class Login extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    //@q if we have an email && password in our inputs
+    //@q if we have an email && password in our input
     if (this.isFormValid(this.state)) {
       //@q we clear errors array && set loading to true
       this.setState({ errors: [], loading: true });
