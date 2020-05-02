@@ -162,7 +162,8 @@ class Messages extends React.Component {
       //@d    {userId(snap.key): true(snap.val())}
       //@d    }
       //@d
-      //@q if snap.val() === true we clear data of the user from the typing collection on disconnect event
+      //@q if snap.val() === true
+      //@d && we clear data of the user from the typing collection on disconnect event
       if (snap.val() === true) {
         this.state.typingRef
           .child(channelId)
@@ -177,6 +178,8 @@ class Messages extends React.Component {
     });
   };
 
+  //@q Enable event listener on value for users collection
+  //@d https://firebase.google.com/docs/database/admin/retrieve-data#value
   addUserStarsListener = (channelId, userId) => {
     this.state.usersRef
       .child(userId)
@@ -196,6 +199,7 @@ class Messages extends React.Component {
     return privateChannel ? privateMessagesRef : messagesRef;
   };
 
+  //@q enable or disable the starred feature on channels by inverting isChannelStarred state on each click
   handleStar = () => {
     this.setState(
       (prevState) => ({
@@ -205,6 +209,15 @@ class Messages extends React.Component {
     );
   };
 
+  //@d our starred document structure ::
+  //@d "starred" ; {
+  //@d	  "channelId" : {
+  //@d           "createdBy" : {user},
+  //@d		   "details"  : {description text},
+  //@d		   "name"    : { WorkStation}
+  //@d                  }
+  //@d              }
+  //@q we update our user document with the new starred channel
   starChannel = () => {
     if (this.state.isChannelStarred) {
       this.state.usersRef.child(`${this.state.user.uid}/starred`).update({
@@ -217,6 +230,7 @@ class Messages extends React.Component {
           },
         },
       });
+      //@q or we remove the starred channel when isChannelStarred state is false
     } else {
       this.state.usersRef
         .child(`${this.state.user.uid}/starred`)
@@ -240,13 +254,21 @@ class Messages extends React.Component {
   };
 
   handleSearchMessages = () => {
+    //@q we create an array with our channel messages
     const channelMessages = [...this.state.messages];
+    //@q https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/RegExp
     const regex = new RegExp(this.state.searchTerm, "gi");
+    //@q https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/reduce
+    //@q the callback function is called for each element in our array
+
     const searchResults = channelMessages.reduce((acc, message) => {
+      //@q if our message content exist && our message content match ou regex based on our searchTerm state
+      //@q or the username match our searchTerm
       if (
         (message.content && message.content.match(regex)) ||
         message.user.name.match(regex)
       ) {
+        //@q then we push our message in our accumulator
         acc.push(message);
       }
       return acc;
@@ -256,17 +278,22 @@ class Messages extends React.Component {
   };
 
   countUniqueUsers = (messages) => {
+    //@q here our reducer seek in our messages array state each user missing in our uniqueUsers
     const uniqueUsers = messages.reduce((acc, message) => {
       if (!acc.includes(message.user.name)) {
         acc.push(message.user.name);
       }
       return acc;
     }, []);
+    //@q if uniqueUsers array is empty or have more than one element
     const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+    //@q then we have an s at user's' string
     const numUniqueUsers = `${uniqueUsers.length} user${plural ? "s" : ""}`;
     this.setState({ numUniqueUsers });
   };
 
+  //@q quite similar to countUniqueUsers function
+  //@q this time we just increment an count property on our user object nested in our message
   countUserPosts = (messages) => {
     let userPosts = messages.reduce((acc, message) => {
       if (message.user.name in acc) {
@@ -282,6 +309,7 @@ class Messages extends React.Component {
     this.props.setUserPosts(userPosts);
   };
 
+  //@q we format each message in our UI and call this function in our render function
   displayMessages = (messages) =>
     messages.length > 0 &&
     messages.map((message) => (
@@ -291,7 +319,8 @@ class Messages extends React.Component {
         user={this.state.user}
       />
     ));
-
+  //@q accept channel :: this.props.currentChannel as argument
+  //@q if channel !== null than we have a nested ternary that display @ for a private channel && # for a public channel
   displayChannelName = (channel) => {
     return channel
       ? `${this.state.privateChannel ? "@" : "#"}${channel.name}`
