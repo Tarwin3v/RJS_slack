@@ -4,9 +4,9 @@ import mime from "mime-types";
 import { Modal, Input, Button, Icon } from "semantic-ui-react";
 
 //@d                                        PROPS
-//@d modal={modal}
-//@d closeModal={this.closeModal}           >>>>> MessageForm parent comp
-//@d uploadFile={this.uploadFile}
+//@d modal :: bool
+//@d closeModal :: fn                      >>>>> MessageForm parent comp
+//@d uploadFile :: fn
 
 class FileModal extends Component {
   state = {

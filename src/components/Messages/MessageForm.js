@@ -11,11 +11,11 @@ import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
 
 //@d                                                      PROPS
-//@d messagesRef={messagesRef} :: messagesRef: firebase.database().ref('messages')            >>>>>    Messages parent comp >>>>> App
-//@d currentChannel={channel}  :: channel: this.props.currentChannel                       	  >>>>>    Messages  >>>>> App
-//@d currentUser={user} :: user: this.props.currentUser                                       >>>>>    Messages  >>>>> App
-//@d isPrivateChannel={privateChannel} ::  privateChannel: this.props.isPrivateChannel        >>>>>    Messages  >>>>> App
-//@d getMessagesRef={this.getMessagesRef}                                                     >>>>>    Messages
+//@d messagesRef :: obj :: firebase.database().ref('messages')            >>>>>    Messages parent comp >>>>> App
+//@d currentChannel :: obj                                            	  >>>>>    Messages  >>>>> App
+//@d currentUser  :: obj                                                  >>>>>    Messages  >>>>> App
+//@d isPrivateChannel :: bool                                             >>>>>    Messages  >>>>> App
+//@d getMessagesRef  :: fn                                                >>>>>    Messages
 
 export class MessageForm extends Component {
   state = {
