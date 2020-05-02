@@ -162,7 +162,7 @@ class Messages extends React.Component {
       //@d    {userId(snap.key): true(snap.val())}
       //@d    }
       //@d
-      //@q if snap.val()
+      //@q if snap.val() === true we clear data of the user from the typing collection on disconnect event
       if (snap.val() === true) {
         this.state.typingRef
           .child(channelId)
