@@ -2,13 +2,13 @@ import React, { Component } from "react";
 //SEMANTIC
 import { Header, Segment, Input, Icon } from "semantic-ui-react";
 
-//@d                         PROPS
-//@d    channelName
-//@d	numUniqueUsers
-//@d 	handleSearchChange                 >>> Messages parent comp
-//@d	isPrivateChannel
-//@d	handleStar
-//@d	isChannelStarred
+//@d                                         PROPS
+//@d  channelName :: str
+//@d	numUniqueUsers :: str
+//@d 	handleSearchChange  :: fn              >>>>>   Messages parent comp
+//@d	isPrivateChannel :: bool
+//@d	handleStar :: fn
+//@d	isChannelStarred :: bool
 
 class MessagesHeader extends Component {
   render() {
