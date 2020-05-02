@@ -16,7 +16,7 @@ import Skeleton from "./Skeleton";
 
 //@d 					                      PROPS
 //@d currentChannel :: obj
-//@d currentUser :: obj							>>>>>     App parent comp
+//@d currentUser :: obj							>>>>>     App
 //@d isPrivateChannel :: bool
 
 class Messages extends React.Component {

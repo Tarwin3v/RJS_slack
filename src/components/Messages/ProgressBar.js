@@ -2,7 +2,7 @@ import React from "react";
 import { Progress } from "semantic-ui-react";
 
 //@d                                   PROPS
-//@d  uploadState :: str               >>>>>  MessageForm parent comp
+//@d  uploadState :: str               >>>>>  MessageForm
 //@d  percentUploaded :: int
 
 const ProgressBar = ({ uploadState, percentUploaded }) =>

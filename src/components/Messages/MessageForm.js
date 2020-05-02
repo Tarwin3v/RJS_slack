@@ -11,7 +11,7 @@ import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
 
 //@d                                                      PROPS
-//@d messagesRef :: obj :: firebase.database().ref('messages')            >>>>>    Messages parent comp >>>>> App
+//@d messagesRef :: obj :: firebase.database().ref('messages')            >>>>>    Messages  >>>>> App
 //@d currentChannel :: obj                                            	  >>>>>    Messages  >>>>> App
 //@d currentUser  :: obj                                                  >>>>>    Messages  >>>>> App
 //@d isPrivateChannel :: bool                                             >>>>>    Messages  >>>>> App

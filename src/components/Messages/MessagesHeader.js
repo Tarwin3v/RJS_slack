@@ -5,7 +5,7 @@ import { Header, Segment, Input, Icon } from "semantic-ui-react";
 //@d                                         PROPS
 //@d  channelName :: str
 //@d	numUniqueUsers :: str
-//@d 	handleSearchChange  :: fn              >>>>>   Messages parent comp
+//@d 	handleSearchChange  :: fn              >>>>>   Messages
 //@d	isPrivateChannel :: bool
 //@d	handleStar :: fn
 //@d	isChannelStarred :: bool

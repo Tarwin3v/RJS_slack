@@ -16,7 +16,7 @@ const isImage = (message) => {
 const timeFromNow = (timestamp) => moment(timestamp).fromNow();
 
 //@d                   PROPS
-//@d message :: obj    >>>> Messages parent comp
+//@d message :: obj    >>>> Messages
 //@d user :: obj
 
 const Message = ({ message, user }) => (

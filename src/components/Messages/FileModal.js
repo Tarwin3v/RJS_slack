@@ -5,7 +5,7 @@ import { Modal, Input, Button, Icon } from "semantic-ui-react";
 
 //@d                                        PROPS
 //@d modal :: bool
-//@d closeModal :: fn                      >>>>> MessageForm parent comp
+//@d closeModal :: fn                      >>>>> MessageForm
 //@d uploadFile :: fn
 
 class FileModal extends Component {
