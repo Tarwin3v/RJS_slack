@@ -15,7 +15,10 @@ const isImage = (message) => {
 //@q we use moment the timestamp property of our message to display when the message has been posted
 const timeFromNow = (timestamp) => moment(timestamp).fromNow();
 
-//@d message && user props sent back by messages parent comp in displayMessages function
+//@d                   PROPS
+//@d message           >>>> Messages parent comp
+//@d user
+
 const Message = ({ message, user }) => (
   <Comment>
     <Comment.Avatar src={message.user.avatar} />

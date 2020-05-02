@@ -10,12 +10,12 @@ import "emoji-mart/css/emoji-mart.css";
 import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
 
-//@d Props from Messages Parent
-//@d messagesRef={messagesRef} :: messagesRef: firebase.database().ref('messages') :: App
-//@d currentChannel={channel}  :: channel: this.props.currentChannel :: App
-//@d currentUser={user} :: user: this.props.currentUser :: App
-//@d isPrivateChannel={privateChannel} ::  privateChannel: this.props.isPrivateChannel :: App
-//@d getMessagesRef={this.getMessagesRef}
+//@d                                                      PROPS
+//@d messagesRef={messagesRef} :: messagesRef: firebase.database().ref('messages')            >>>>>    Messages parent comp >>>>> App
+//@d currentChannel={channel}  :: channel: this.props.currentChannel                       	  >>>>>    Messages  >>>>> App
+//@d currentUser={user} :: user: this.props.currentUser                                       >>>>>    Messages  >>>>> App
+//@d isPrivateChannel={privateChannel} ::  privateChannel: this.props.isPrivateChannel        >>>>>    Messages  >>>>> App
+//@d getMessagesRef={this.getMessagesRef}                                                     >>>>>    Messages
 
 export class MessageForm extends Component {
   state = {
