@@ -17,7 +17,7 @@ import {
 
 //@d                                                PROPS
 //@d	user :: obj
-//@d	setPrivateChannel :: fn                     >>>>>>    App
+//@d	setPrivateChannel :: fn                     >>>>>    App
 
 class Channels extends React.Component {
   state = {
