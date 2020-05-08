@@ -180,6 +180,7 @@ class Messages extends React.Component {
 
   //@q Enable event listener on value for users collection
   //@d https://firebase.google.com/docs/database/admin/retrieve-data#value
+
   addUserStarsListener = (channelId, userId) => {
     this.state.usersRef
       .child(userId)
