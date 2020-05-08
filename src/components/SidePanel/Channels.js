@@ -15,9 +15,9 @@ import {
   Label,
 } from "semantic-ui-react";
 
-//@d                                                PROPS
-//@d	user :: obj
-//@d	setPrivateChannel :: fn                     >>>>>    App
+//@dt                                                PROPS
+//@dt	user :: obj
+//@dt	setPrivateChannel :: fn                     >>>>>    App
 
 class Channels extends React.Component {
   state = {
@@ -46,15 +46,21 @@ class Channels extends React.Component {
     });
   }
 
+  //@q Enable listener on child_added event for channels collection
   addListeners = () => {
     let loadedChannels = [];
     this.state.channelsRef.on("child_added", (snap) => {
+      //@q we push our new data in our loadedChannels
       loadedChannels.push(snap.val());
+      //@q we use this loadedChannels array to populate our channels state
+      //@q && we use a callback function in our setState to set the firstChannel
       this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
+      //@q we add our data id to our addNotificationListener
       this.addNotificationListener(snap.key);
     });
   };
 
+  //@q Enable listener on value event for messages collection
   addNotificationListener = (channelId) => {
     this.state.messagesRef.child(channelId).on("value", (snap) => {
       if (this.state.channel) {

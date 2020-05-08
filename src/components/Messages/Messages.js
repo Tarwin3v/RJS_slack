@@ -344,10 +344,11 @@ class Messages extends React.Component {
       ));
   };
 
+  //@q display a space filler skeleton during the loading of a channel
   displayMessagesSkeleton = (loading) =>
     loading ? (
       <React.Fragment>
-        {[...Array(14)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <Skeleton key={i} />
         ))}
       </React.Fragment>
